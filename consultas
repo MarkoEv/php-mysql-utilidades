@@ -1,0 +1,306 @@
+
+### **Consultas Básicas**
+
+#### 1. **Crear una tabla**
+   - **Objetivo**: Crear una nueva tabla en la base de datos.
+   - **Explicación**: Esta consulta define una nueva tabla llamada `usuarios` con tres columnas: `id` (clave primaria), `nombre` y `email`. La columna `id` es autoincremental, lo que significa que se incrementará automáticamente cada vez que se inserte un nuevo registro.
+   ```sql
+   CREATE TABLE usuarios (
+       id INT PRIMARY KEY AUTO_INCREMENT,
+       nombre VARCHAR(50),
+       email VARCHAR(100)
+   );
+   ```
+
+#### 2. **Insertar datos**
+   - **Objetivo**: Insertar registros en una tabla.
+   - **Explicación**: Esta consulta inserta un nuevo usuario en la tabla `usuarios`. Los valores `'Juan'` y `'juan@example.com'` se asignan a las columnas `nombre` y `email`, respectivamente.
+   ```sql
+   INSERT INTO usuarios (nombre, email) VALUES ('Juan', 'juan@example.com');
+   ```
+
+#### 3. **Seleccionar todos los datos**
+   - **Objetivo**: Obtener todos los registros de una tabla.
+   - **Explicación**: Esta consulta devuelve todas las filas y columnas de la tabla `usuarios`.
+   ```sql
+   SELECT * FROM usuarios;
+   ```
+
+#### 4. **Seleccionar columnas específicas**
+   - **Objetivo**: Obtener solo ciertas columnas de una tabla.
+   - **Explicación**: Esta consulta devuelve solo las columnas `nombre` y `email` de la tabla `usuarios`, omitiendo otras columnas como `id`.
+   ```sql
+   SELECT nombre, email FROM usuarios;
+   ```
+
+#### 5. **Actualizar datos**
+   - **Objetivo**: Modificar registros existentes.
+   - **Explicación**: Esta consulta actualiza el campo `email` del usuario con `id = 1`. El valor anterior del campo `email` será reemplazado por `'nuevo_email@example.com'`.
+   ```sql
+   UPDATE usuarios SET email = 'nuevo_email@example.com' WHERE id = 1;
+   ```
+
+#### 6. **Eliminar datos**
+   - **Objetivo**: Eliminar registros de una tabla.
+   - **Explicación**: Esta consulta elimina el usuario con `id = 1` de la tabla `usuarios`.
+   ```sql
+   DELETE FROM usuarios WHERE id = 1;
+   ```
+
+#### 7. **Filtrar datos con `WHERE`**
+   - **Objetivo**: Filtrar registros según una condición.
+   - **Explicación**: Esta consulta devuelve todos los usuarios cuyo `nombre` sea igual a `'Juan'`.
+   ```sql
+   SELECT * FROM usuarios WHERE nombre = 'Juan';
+   ```
+
+#### 8. **Ordenar datos con `ORDER BY`**
+   - **Objetivo**: Ordenar los resultados de una consulta.
+   - **Explicación**: Esta consulta ordena los usuarios por su `nombre` en orden ascendente (`ASC`). También puedes usar `DESC` para orden descendente.
+   ```sql
+   SELECT * FROM usuarios ORDER BY nombre ASC;
+   ```
+
+#### 9. **Limitar resultados con `LIMIT`**
+   - **Objetivo**: Limitar el número de registros devueltos.
+   - **Explicación**: Esta consulta devuelve solo los primeros 5 registros de la tabla `usuarios`.
+   ```sql
+   SELECT * FROM usuarios LIMIT 5;
+   ```
+
+#### 10. **Paginación con `LIMIT` y `OFFSET`**
+   - **Objetivo**: Implementar paginación en los resultados.
+   - **Explicación**: Esta consulta omite los primeros 20 registros (`OFFSET 20`) y devuelve los siguientes 10 registros (`LIMIT 10`).
+   ```sql
+   SELECT * FROM usuarios LIMIT 10 OFFSET 20;
+   ```
+
+---
+
+### **Consultas con Claves Foráneas**
+
+#### 11. **Crear una tabla con clave foránea**
+   - **Objetivo**: Definir una relación entre dos tablas usando una clave foránea.
+   - **Explicación**: Aquí creamos una tabla `pedidos` que tiene una clave foránea `usuario_id` que hace referencia al `id` de la tabla `usuarios`. Esto asegura que cada pedido esté asociado a un usuario válido.
+   ```sql
+   CREATE TABLE pedidos (
+       id INT PRIMARY KEY AUTO_INCREMENT,
+       usuario_id INT,
+       producto VARCHAR(100),
+       FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+   );
+   ```
+
+#### 12. **Insertar datos en una tabla con clave foránea**
+   - **Objetivo**: Insertar registros en una tabla que tiene una clave foránea.
+   - **Explicación**: Esta consulta inserta un nuevo pedido asociado al usuario con `id = 1`.
+   ```sql
+   INSERT INTO pedidos (usuario_id, producto) VALUES (1, 'Laptop');
+   ```
+
+#### 13. **Eliminar una tabla con clave foránea**
+   - **Objetivo**: Eliminar una tabla que tiene relaciones con otras tablas.
+   - **Explicación**: Esta consulta elimina la tabla `pedidos`. Antes de eliminarla, debes asegurarte de que no haya dependencias activas o deshabilitar las restricciones de clave foránea.
+   ```sql
+   DROP TABLE pedidos;
+   ```
+
+#### 14. **Modificar una clave foránea**
+   - **Objetivo**: Cambiar la definición de una clave foránea.
+   - **Explicación**: Primero eliminamos la clave foránea existente (`pedidos_ibfk_1`) y luego la volvemos a agregar con una nueva definición.
+   ```sql
+   ALTER TABLE pedidos DROP FOREIGN KEY pedidos_ibfk_1;
+   ALTER TABLE pedidos ADD FOREIGN KEY (usuario_id) REFERENCES usuarios(id);
+   ```
+
+---
+
+### **Consultas con JOIN**
+
+#### 15. **INNER JOIN**
+   - **Objetivo**: Obtener registros que coincidan en ambas tablas.
+   - **Explicación**: Esta consulta une las tablas `usuarios` y `pedidos` usando la columna `usuario_id`. Solo se devuelven los usuarios que tienen pedidos asociados.
+   ```sql
+   SELECT usuarios.nombre, pedidos.producto
+   FROM usuarios
+   INNER JOIN pedidos ON usuarios.id = pedidos.usuario_id;
+   ```
+
+#### 16. **LEFT JOIN**
+   - **Objetivo**: Obtener todos los registros de la tabla izquierda y los coincidentes de la derecha.
+   - **Explicación**: Esta consulta devuelve todos los usuarios, incluso aquellos que no tienen pedidos asociados. Para los usuarios sin pedidos, el campo `producto` será `NULL`.
+   ```sql
+   SELECT usuarios.nombre, pedidos.producto
+   FROM usuarios
+   LEFT JOIN pedidos ON usuarios.id = pedidos.usuario_id;
+   ```
+
+#### 17. **RIGHT JOIN**
+   - **Objetivo**: Obtener todos los registros de la tabla derecha y los coincidentes de la izquierda.
+   - **Explicación**: Esta consulta devuelve todos los pedidos, incluso aquellos que no tienen usuarios asociados. Para los pedidos sin usuarios, el campo `nombre` será `NULL`.
+   ```sql
+   SELECT usuarios.nombre, pedidos.producto
+   FROM usuarios
+   RIGHT JOIN pedidos ON usuarios.id = pedidos.usuario_id;
+   ```
+
+#### 18. **FULL OUTER JOIN (simulado)**
+   - **Objetivo**: Simular un `FULL OUTER JOIN` en MySQL.
+   - **Explicación**: MySQL no soporta directamente `FULL OUTER JOIN`, pero puedes simularlo combinando `LEFT JOIN` y `RIGHT JOIN` con `UNION`.
+   ```sql
+   SELECT usuarios.nombre, pedidos.producto
+   FROM usuarios
+   LEFT JOIN pedidos ON usuarios.id = pedidos.usuario_id
+   UNION
+   SELECT usuarios.nombre, pedidos.producto
+   FROM usuarios
+   RIGHT JOIN pedidos ON usuarios.id = pedidos.usuario_id;
+   ```
+
+#### 19. **CROSS JOIN**
+   - **Objetivo**: Combinar cada fila de una tabla con cada fila de otra tabla.
+   - **Explicación**: Esta consulta genera un producto cartesiano entre `usuarios` y `pedidos`, lo que significa que cada usuario se combina con cada pedido.
+   ```sql
+   SELECT usuarios.nombre, pedidos.producto
+   FROM usuarios
+   CROSS JOIN pedidos;
+   ```
+
+---
+
+### **Consultas Avanzadas**
+
+#### 20. **Subconsultas**
+   - **Objetivo**: Usar una consulta dentro de otra consulta.
+   - **Explicación**: Esta consulta selecciona los nombres de los usuarios cuyos `id` están presentes en la tabla `pedidos`.
+   ```sql
+   SELECT nombre FROM usuarios WHERE id IN (SELECT usuario_id FROM pedidos);
+   ```
+
+#### 21. **Agrupar datos con `GROUP BY`**
+   - **Objetivo**: Agrupar registros por una columna específica.
+   - **Explicación**: Esta consulta agrupa los pedidos por `usuario_id` y cuenta cuántos pedidos tiene cada usuario.
+   ```sql
+   SELECT usuario_id, COUNT(*) AS total_pedidos
+   FROM pedidos
+   GROUP BY usuario_id;
+   ```
+
+#### 22. **Filtrar grupos con `HAVING`**
+   - **Objetivo**: Filtrar grupos después de usar `GROUP BY`.
+   - **Explicación**: Esta consulta devuelve los usuarios que tienen más de un pedido.
+   ```sql
+   SELECT usuario_id, COUNT(*) AS total_pedidos
+   FROM pedidos
+   GROUP BY usuario_id
+   HAVING COUNT(*) > 1;
+   ```
+
+#### 23. **Consultas con funciones de agregación**
+   - **Objetivo**: Realizar cálculos sobre un conjunto de valores.
+   - **Explicación**: Esta consulta devuelve el precio máximo de los productos en la tabla `productos`.
+   ```sql
+   SELECT MAX(precio) AS precio_maximo FROM productos;
+   ```
+
+#### 24. **Consultas con alias (`AS`)**
+   - **Objetivo**: Asignar nombres temporales a columnas o tablas.
+   - **Explicación**: Esta consulta renombra temporalmente la columna `nombre` como `cliente` en los resultados.
+   ```sql
+   SELECT nombre AS cliente FROM usuarios;
+   ```
+
+#### 25. **Consultas con `DISTINCT`**
+   - **Objetivo**: Obtener valores únicos de una columna.
+   - **Explicación**: Esta consulta devuelve los nombres únicos de la tabla `usuarios`.
+   ```sql
+   SELECT DISTINCT nombre FROM usuarios;
+   ```
+
+#### 26. **Consultas con `UNION`**
+   - **Objetivo**: Combinar los resultados de dos consultas.
+   - **Explicación**: Esta consulta combina los nombres de los usuarios con los productos de los pedidos.
+   ```sql
+   SELECT nombre FROM usuarios
+   UNION
+   SELECT producto FROM pedidos;
+   ```
+
+#### 27. **Consultas con `CASE`**
+   - **Objetivo**: Evaluar condiciones y devolver valores basados en ellas.
+   - **Explicación**: Esta consulta clasifica a los usuarios como "Menor" o "Mayor" según su edad.
+   ```sql
+   SELECT nombre,
+          CASE
+              WHEN edad < 18 THEN 'Menor'
+              WHEN edad >= 18 THEN 'Mayor'
+          END AS categoria
+   FROM usuarios;
+   ```
+
+#### 28. **Consultas con `LIKE`**
+   - **Objetivo**: Filtrar registros usando patrones.
+   - **Explicación**: Esta consulta devuelve los usuarios cuyo nombre comience con la letra "J".
+   ```sql
+   SELECT * FROM usuarios WHERE nombre LIKE 'J%';
+   ```
+
+#### 29. **Consultas con `BETWEEN`**
+   - **Objetivo**: Filtrar registros dentro de un rango.
+   - **Explicación**: Esta consulta devuelve los productos cuyo precio esté entre 100 y 500.
+   ```sql
+   SELECT * FROM productos WHERE precio BETWEEN 100 AND 500;
+   ```
+
+#### 30. **Consultas con `IN`**
+   - **Objetivo**: Filtrar registros que coincidan con una lista de valores.
+   - **Explicación**: Esta consulta devuelve los usuarios cuyos `id` sean 1, 2 o 3.
+   ```sql
+   SELECT * FROM usuarios WHERE id IN (1, 2, 3);
+   ```
+
+---
+
+### **Consultas para Índices**
+
+#### 31. **Crear un índice**
+   - **Objetivo**: Mejorar el rendimiento de las consultas creando un índice.
+   - **Explicación**: Esta consulta crea un índice en la columna `nombre` de la tabla `usuarios`, lo que acelera las búsquedas por esa columna.
+   ```sql
+   CREATE INDEX idx_nombre ON usuarios(nombre);
+   ```
+
+#### 32. **Eliminar un índice**
+   - **Objetivo**: Eliminar un índice existente.
+   - **Explicación**: Esta consulta elimina el índice `idx_nombre` de la tabla `usuarios`.
+   ```sql
+   DROP INDEX idx_nombre ON usuarios;
+   ```
+
+---
+
+### **Consultas para Vistas**
+
+#### 33. **Crear una vista**
+   - **Objetivo**: Crear una vista para simplificar consultas complejas.
+   - **Explicación**: Esta consulta crea una vista llamada `vista_usuarios` que muestra solo las columnas `nombre` y `email` de la tabla `usuarios`.
+   ```sql
+   CREATE VIEW vista_usuarios AS
+   SELECT nombre, email FROM usuarios;
+   ```
+
+#### 34. **Consultar una vista**
+   - **Objetivo**: Usar una vista como si fuera una tabla.
+   - **Explicación**: Esta consulta selecciona todos los registros de la vista `vista_usuarios`.
+   ```sql
+   SELECT * FROM vista_usuarios;
+   ```
+
+#### 35. **Eliminar una vista**
+   - **Objetivo**: Eliminar una vista existente.
+   - **Explicación**: Esta consulta elimina la vista `vista_usuarios`.
+   ```sql
+   DROP VIEW vista_usuarios;
+   ```
+
+---
